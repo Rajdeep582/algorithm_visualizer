@@ -1,5 +1,17 @@
 export const NAVIGATION = [
   {
+    id: 'artificial-intelligence',
+    label: 'Artificial Intelligence',
+    items: [
+      { id: 'ai',         label: 'AI Overview',      status: 'ready' },
+      { id: 'ai-ml',      label: 'Machine Learning', status: 'ready' },
+      { id: 'ai-neural',  label: 'Neural Networks',  status: 'ready' },
+      { id: 'ai-deep',    label: 'Deep Learning',    status: 'ready' },
+      { id: 'ai-cnn',     label: 'CNN',              status: 'ready' },
+      { id: 'ai-rnn',     label: 'RNN & LSTM',       status: 'ready' },
+    ],
+  },
+  {
     id: 'data-structures',
     label: 'Data Structures',
     items: [

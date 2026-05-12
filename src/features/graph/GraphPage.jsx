@@ -13,15 +13,28 @@ const COMPLEXITY = [
 
 // Fixed demo graph: nodes with positions, edges
 const NODES = [
-  { id:0, label:'A', x:200, y:60 },
-  { id:1, label:'B', x:80,  y:160 },
-  { id:2, label:'C', x:320, y:160 },
-  { id:3, label:'D', x:40,  y:280 },
-  { id:4, label:'E', x:160, y:280 },
-  { id:5, label:'F', x:280, y:280 },
-  { id:6, label:'G', x:360, y:280 },
+  { id:0, label:'A', x:250, y:50  },
+  { id:1, label:'B', x:90,  y:155 },
+  { id:2, label:'C', x:250, y:155 },
+  { id:3, label:'D', x:410, y:155 },
+  { id:4, label:'E', x:45,  y:285 },
+  { id:5, label:'F', x:175, y:285 },
+  { id:6, label:'G', x:325, y:285 },
+  { id:7, label:'H', x:455, y:285 },
+  { id:8, label:'I', x:120, y:395 },
+  { id:9, label:'J', x:380, y:395 },
 ]
-const EDGES = [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6],[4,5]]
+const EDGES = [
+  [0,1],[0,2],[0,3],
+  [1,2],[1,4],[1,5],
+  [2,5],[2,6],
+  [3,6],[3,7],
+  [4,8],
+  [5,6],[5,8],
+  [6,9],
+  [7,9],
+  [8,9],
+]
 const ADJ = NODES.map((_,i) => EDGES.filter(([a,b])=>a===i||b===i).map(([a,b])=>a===i?b:a))
 
 function bfsSteps(start=0) {
@@ -127,7 +140,7 @@ export default function GraphPage() {
             </AnimatePresence>
           </div>
 
-          <svg width="420" height="360" style={{display:'block',margin:'0 auto'}}>
+          <svg width="500" height="440" style={{display:'block',margin:'0 auto'}}>
             {EDGES.map(([a,b],i) => (
               <motion.line key={i}
                 x1={NODES[a].x} y1={NODES[a].y} x2={NODES[b].x} y2={NODES[b].y}

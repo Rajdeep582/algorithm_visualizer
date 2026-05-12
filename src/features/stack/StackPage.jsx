@@ -5,9 +5,9 @@ import CodeBlock from '../../components/shared/CodeBlock'
 import { ComplexityTable } from '../../components/shared/ComplexityBadge'
 
 const COMPLEXITY = [
-  { case: 'Push', time: 'O(1)', space: 'O(1)' },
-  { case: 'Pop', time: 'O(1)', space: 'O(1)' },
-  { case: 'Peek', time: 'O(1)', space: 'O(1)' },
+  { case: 'Push',   time: 'O(1)', space: 'O(1)' },
+  { case: 'Pop',    time: 'O(1)', space: 'O(1)' },
+  { case: 'Peek',   time: 'O(1)', space: 'O(1)' },
   { case: 'Search', time: 'O(n)', space: 'O(1)' },
 ]
 
@@ -46,17 +46,19 @@ function StackVisualizer() {
 
   return (
     <div className="space-y-4">
+      {/* Controls */}
       <div className="flex gap-2 flex-wrap items-center">
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && push()}
           placeholder="Value…"
           className="px-3 py-1.5 rounded-lg text-sm w-24 outline-none"
           style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: '#f0f0f8' }}
         />
         {[
           { label: 'Push', fn: push },
-          { label: 'Pop', fn: pop },
+          { label: 'Pop',  fn: pop  },
           { label: 'Peek', fn: peek },
         ].map(b => (
           <motion.button key={b.label} onClick={b.fn}
@@ -68,84 +70,85 @@ function StackVisualizer() {
         ))}
       </div>
 
-      <div className="rounded-xl p-6 flex gap-8 items-end justify-center"
-        style={{ background: '#0d0d16', border: '1px solid rgba(255,255,255,0.06)', minHeight: '260px' }}>
+      {/* Canvas — overflow so it never resizes the page */}
+      <div className="rounded-xl p-6 overflow-auto"
+        style={{ background: '#0d0d16', border: '1px solid rgba(255,255,255,0.06)', minHeight: '300px' }}>
 
-        {/* Stack tower */}
-        <div className="flex flex-col items-center gap-0">
-          {/* TOP label */}
-          <div className="mb-2 text-xs" style={{ color: '#10b981' }}>▼ TOP</div>
+        {/* items-start: top anchored, no vertical shift on push/pop */}
+        <div className="flex gap-10 items-start justify-center">
 
-          {/* Stack container outline */}
-          <div className="relative" style={{ width: '120px' }}>
-            <AnimatePresence mode="popLayout">
-              {[...stack].reverse().map((val, i) => {
-                const realIdx = stack.length - 1 - i
-                const isTop = realIdx === stack.length - 1
-                const isHighlighted = highlight === realIdx
+          {/* Stack tower */}
+          <div className="flex flex-col items-center">
+            <div className="mb-2 text-xs font-medium" style={{ color: '#10b981' }}>▼ TOP</div>
 
-                return (
-                  <motion.div
-                    key={`${realIdx}-${val}`}
-                    layout
-                    initial={{ opacity: 0, scaleY: 0, y: -30 }}
-                    animate={{ opacity: 1, scaleY: 1, y: 0 }}
-                    exit={{ opacity: 0, scaleY: 0, x: 30 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-sm font-mono font-semibold"
-                    style={{
-                      background: isHighlighted
-                        ? 'rgba(139,92,246,0.35)'
-                        : isTop
-                        ? 'rgba(139,92,246,0.15)'
-                        : 'rgba(255,255,255,0.04)',
-                      border: `1px solid ${isHighlighted ? 'rgba(139,92,246,0.7)' : isTop ? 'rgba(139,92,246,0.3)' : 'rgba(255,255,255,0.08)'}`,
-                      borderBottom: i < stack.length - 1 ? 'none' : undefined,
-                      color: isHighlighted ? '#f0f0f8' : isTop ? '#a78bfa' : '#8888aa',
-                      boxShadow: isHighlighted ? '0 0 16px rgba(139,92,246,0.4)' : 'none',
-                    }}
-                  >
-                    <span>{val}</span>
-                    {isTop && <span style={{ color: '#555570', fontSize: '10px' }}>top</span>}
-                  </motion.div>
-                )
-              })}
-            </AnimatePresence>
+            {/* Fixed-width tower, grows downward */}
+            <div style={{ width: '130px' }}>
+              <AnimatePresence initial={false}>
+                {[...stack].reverse().map((val, i) => {
+                  const realIdx = stack.length - 1 - i
+                  const isTop = realIdx === stack.length - 1
+                  const isHighlighted = highlight === realIdx
 
-            {/* Bottom wall */}
-            <div className="w-full h-1 rounded-b" style={{ background: 'rgba(255,255,255,0.08)' }} />
+                  return (
+                    <motion.div
+                      key={`${realIdx}-${val}`}
+                      initial={{ opacity: 0, scaleY: 0.4, y: -20 }}
+                      animate={{
+                        opacity: 1, scaleY: 1, y: 0,
+                        background: isHighlighted ? 'rgba(139,92,246,0.35)' : isTop ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.04)',
+                        boxShadow: isHighlighted ? '0 0 16px rgba(139,92,246,0.4)' : 'none',
+                      }}
+                      exit={{ opacity: 0, scaleY: 0, x: 30 }}
+                      transition={{ type: 'spring', stiffness: 420, damping: 28 }}
+                      style={{
+                        transformOrigin: 'top',
+                        border: `1px solid ${isHighlighted ? 'rgba(139,92,246,0.7)' : isTop ? 'rgba(139,92,246,0.3)' : 'rgba(255,255,255,0.08)'}`,
+                        borderBottom: i < stack.length - 1 ? 'none' : undefined,
+                        color: isHighlighted ? '#f0f0f8' : isTop ? '#a78bfa' : '#8888aa',
+                      }}
+                      className="w-full flex items-center justify-between px-3 py-2.5 text-sm font-mono font-semibold"
+                    >
+                      <span>{val}</span>
+                      {isTop && <span style={{ color: '#555570', fontSize: '10px' }}>top</span>}
+                    </motion.div>
+                  )
+                })}
+              </AnimatePresence>
+              {/* Bottom wall */}
+              <div className="w-full h-1 rounded-b" style={{ background: 'rgba(255,255,255,0.08)' }} />
+            </div>
+
+            <div className="mt-2 text-xs" style={{ color: '#333350' }}>▲ BOTTOM</div>
           </div>
 
-          {/* BOTTOM label */}
-          <div className="mt-2 text-xs" style={{ color: '#333350' }}>▲ BOTTOM</div>
-        </div>
+          {/* Info panel — all boxes fixed size, no layout shift */}
+          <div className="flex flex-col gap-3" style={{ width: '110px', flexShrink: 0 }}>
+            {/* Size */}
+            <div className="rounded-lg px-4 py-3 flex flex-col justify-center"
+              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', height: '64px' }}>
+              <div className="text-xs mb-1" style={{ color: '#555570' }}>Size</div>
+              <div className="font-mono font-semibold" style={{ color: '#f0f0f8' }}>{stack.length}</div>
+            </div>
+            {/* Top */}
+            <div className="rounded-lg px-4 py-3 flex flex-col justify-center"
+              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', height: '64px' }}>
+              <div className="text-xs mb-1" style={{ color: '#555570' }}>Top</div>
+              <div className="font-mono font-semibold" style={{ color: '#a78bfa' }}>
+                {stack.length ? stack[stack.length - 1] : '—'}
+              </div>
+            </div>
+            {/* Label — fixed size, always rendered, opacity only */}
+            <div className="rounded-lg flex items-center"
+              style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.12)', height: '64px', padding: '0 16px', overflow: 'hidden', flexShrink: 0 }}>
+              <motion.div
+                animate={{ opacity: label ? 1 : 0 }}
+                transition={{ duration: 0.15 }}
+                style={{ color: '#a78bfa', fontSize: '14px', fontWeight: 500, lineHeight: '20px', height: '20px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', width: '100%' }}>
+                {label || ' '}
+              </motion.div>
+            </div>
+          </div>
 
-        {/* Info panel */}
-        <div className="space-y-3">
-          <div className="rounded-lg px-4 py-2.5" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div className="text-xs mb-1" style={{ color: '#555570' }}>Size</div>
-            <div className="font-mono font-semibold" style={{ color: '#f0f0f8' }}>{stack.length}</div>
-          </div>
-          <div className="rounded-lg px-4 py-2.5" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div className="text-xs mb-1" style={{ color: '#555570' }}>Top</div>
-            <div className="font-mono font-semibold" style={{ color: '#a78bfa' }}>{stack.length ? stack[stack.length - 1] : 'empty'}</div>
-          </div>
-          <div className="rounded-lg px-4 py-2.5 text-sm" style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.12)', minHeight: '42px', display: 'flex', alignItems: 'center' }}>
-            <AnimatePresence mode="wait">
-              {label && (
-                <motion.span
-                  key={label}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.15 }}
-                  style={{ color: '#a78bfa' }}
-                >
-                  {label}
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </div>
         </div>
       </div>
     </div>

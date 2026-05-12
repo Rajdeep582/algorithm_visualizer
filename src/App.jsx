@@ -17,6 +17,7 @@ import DPPage from './features/graph/DPPage'
 import BacktrackingPage from './features/graph/BacktrackingPage'
 import AboutPage from './features/about/AboutPage'
 import ContactPage from './features/contact/ContactPage'
+import AIPage from './features/ai/AIPage'
 
 const PAGES = {
   home: HomePage,
@@ -33,6 +34,12 @@ const PAGES = {
   backtracking: BacktrackingPage,
   about: AboutPage,
   contact: ContactPage,
+  ai: AIPage,
+  'ai-ml': AIPage,
+  'ai-neural': AIPage,
+  'ai-deep': AIPage,
+  'ai-cnn': AIPage,
+  'ai-rnn': AIPage,
 }
 
 export default function App() {

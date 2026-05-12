@@ -1,15 +1,15 @@
 import { motion } from 'framer-motion'
-import { Cpu, Zap, GitBranch, ChevronRight } from 'lucide-react'
+import { Cpu, Zap, GitBranch, ChevronRight, ArrowUpDown, LayoutList, Network, Grid3X3, Undo2, Triangle, Search, ListTree } from 'lucide-react'
 
 const FEATURED = [
-  { id:'sorting',       title:'Sorting',         desc:'8 algorithms animated',         icon:'⬆', tag:'Algorithm' },
-  { id:'array',         title:'Array',           desc:'Insert, delete, search live',    icon:'▦', tag:'Data Structure' },
-  { id:'bst',           title:'BST',             desc:'Insert, traverse, search',       icon:'⌥', tag:'Data Structure' },
-  { id:'graph',         title:'Graph BFS/DFS',   desc:'Visual node traversal',          icon:'⬡', tag:'Algorithm' },
-  { id:'dp',            title:'Dynamic Prog.',   desc:'Fibonacci, LCS, Coin Change',    icon:'⊞', tag:'Algorithm' },
-  { id:'backtracking',  title:'Backtracking',    desc:'N-Queens step-by-step',          icon:'⏎', tag:'Algorithm' },
-  { id:'heap',          title:'Heap',            desc:'Min/Max heap insert & extract',  icon:'△', tag:'Data Structure' },
-  { id:'searching',     title:'Searching',       desc:'Linear, Binary, Jump, Exponential', icon:'⌕', tag:'Algorithm' },
+  { id:'sorting',       title:'Sorting',         desc:'8 algorithms animated',             Icon: ArrowUpDown,  tag:'Algorithm' },
+  { id:'array',         title:'Array',           desc:'Insert, delete, search live',        Icon: LayoutList,   tag:'Data Structure' },
+  { id:'bst',           title:'BST',             desc:'Insert, traverse, search',           Icon: ListTree,     tag:'Data Structure' },
+  { id:'graph',         title:'Graph BFS/DFS',   desc:'Visual node traversal',              Icon: Network,      tag:'Algorithm' },
+  { id:'dp',            title:'Dynamic Prog.',   desc:'Fibonacci, LCS, Coin Change',        Icon: Grid3X3,      tag:'Algorithm' },
+  { id:'backtracking',  title:'Backtracking',    desc:'N-Queens step-by-step',              Icon: Undo2,        tag:'Algorithm' },
+  { id:'heap',          title:'Heap',            desc:'Min/Max heap insert & extract',      Icon: Triangle,     tag:'Data Structure' },
+  { id:'searching',     title:'Searching',       desc:'Linear, Binary, Jump, Exponential',  Icon: Search,       tag:'Algorithm' },
 ]
 
 export default function HomePage({ onSelect }) {
@@ -65,7 +65,7 @@ export default function HomePage({ onSelect }) {
               onMouseLeave={e=>{e.currentTarget.style.boxShadow='';e.currentTarget.style.borderColor='rgba(255,255,255,0.06)'}}
             >
               <div className="flex items-start justify-between mb-2">
-                <span className="text-xl">{f.icon}</span>
+                <f.Icon size={20} style={{color:'#8b5cf6'}} />
                 <ChevronRight size={14} style={{color:'#333350',marginTop:2}} />
               </div>
               <div className="font-semibold text-sm mb-1" style={{color:'#f0f0f8'}}>{f.title}</div>

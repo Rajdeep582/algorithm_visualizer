@@ -5,7 +5,7 @@ import { X, Copy, Check, Heart } from 'lucide-react'
 const UPI_ID = 'brajdeep029-1@oksbi'
 const QR_URL = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&bgcolor=0d0d16&color=a78bfa&data=${encodeURIComponent(`upi://pay?pa=${UPI_ID}&pn=Brajdeep&cu=INR`)}`
 
-const NAV_LINKS = ['Home', 'About', 'Contact']
+const NAV_LINKS = ['Home', 'AI', 'About', 'Contact']
 
 export default function Navbar({ onNavigate }) {
   const [donateOpen, setDonateOpen] = useState(false)
