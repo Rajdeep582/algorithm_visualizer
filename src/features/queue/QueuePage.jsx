@@ -62,10 +62,15 @@ function QueueVisualizer() {
       </div>
 
       <div className="rounded-xl p-6" style={{ background: '#0d0d16', border: '1px solid rgba(255,255,255,0.06)', minHeight: '180px' }}>
-        {label && (
-          <motion.div key={label} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="text-center mb-4 text-sm font-medium" style={{ color: '#a78bfa' }}>{label}</motion.div>
-        )}
+        <div className="h-6 flex items-center justify-center mb-3">
+          <AnimatePresence mode="wait">
+            {label && (
+              <motion.div key={label} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="text-sm font-medium" style={{ color: '#a78bfa' }}>{label}</motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         <div className="flex items-center justify-center gap-2 overflow-x-auto py-2">
           {/* ENQUEUE arrow */}

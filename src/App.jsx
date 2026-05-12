@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Menu } from 'lucide-react'
 import Sidebar from './components/sidebar/Sidebar'
+import Navbar from './components/layout/Navbar'
 import HomePage from './features/home/HomePage'
 import ArrayPage from './features/array/ArrayPage'
 import SortingPage from './features/sorting/SortingPage'
@@ -14,6 +15,8 @@ import SearchingPage from './features/searching/SearchingPage'
 import GraphPage from './features/graph/GraphPage'
 import DPPage from './features/graph/DPPage'
 import BacktrackingPage from './features/graph/BacktrackingPage'
+import AboutPage from './features/about/AboutPage'
+import ContactPage from './features/contact/ContactPage'
 
 const PAGES = {
   home: HomePage,
@@ -28,11 +31,13 @@ const PAGES = {
   graph: GraphPage,
   dp: DPPage,
   backtracking: BacktrackingPage,
+  about: AboutPage,
+  contact: ContactPage,
 }
 
 export default function App() {
   const [activeId, setActiveId] = useState('home')
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const Page = PAGES[activeId] || HomePage
 
@@ -45,15 +50,18 @@ export default function App() {
         onSelect={setActiveId}
       />
       <div className="flex-1 flex flex-col overflow-hidden">
+        <Navbar onNavigate={(id) => {
+          if (PAGES[id]) setActiveId(id)
+          else if (id === 'home') setActiveId('home')
+        }} />
         {!sidebarOpen && (
-          <div className="flex items-center gap-3 px-4 py-3"
+          <div className="flex items-center gap-3 px-4 py-2"
             style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
             <button onClick={() => setSidebarOpen(true)}
               className="p-1.5 rounded-lg"
               style={{ color: '#8888aa', background: 'rgba(255,255,255,0.04)' }}>
               <Menu size={16} />
             </button>
-            <span className="text-sm font-medium" style={{ color: '#f0f0f8' }}>AlgoViz</span>
           </div>
         )}
         <main className="flex-1 overflow-y-auto">

@@ -7,16 +7,16 @@ import PageLayout from '../../components/layout/PageLayout'
 import { ComplexityTable } from '../../components/shared/ComplexityBadge'
 
 const COMPLEXITY = [
-  { case: 'Linear Search',        time: 'O(n)',       space: 'O(1)' },
-  { case: 'Binary Search',        time: 'O(log n)',   space: 'O(1)' },
-  { case: 'Jump Search',          time: 'O(√n)',      space: 'O(1)' },
+  { case: 'Linear Search',        time: 'O(n)',          space: 'O(1)' },
+  { case: 'Binary Search',        time: 'O(log n)',      space: 'O(1)' },
+  { case: 'Jump Search',          time: 'O(√n)',         space: 'O(1)' },
   { case: 'Interpolation Search', time: 'O(log log n)*', space: 'O(1)' },
-  { case: 'Exponential Search',   time: 'O(log n)',   space: 'O(1)' },
+  { case: 'Exponential Search',   time: 'O(log n)',      space: 'O(1)' },
 ]
 
 function genLinearSteps(arr, target) {
   const s = [{ arr, hl:[], lo:null, hi:null, mid:null, label:`Linear: find ${target}`, found:false }]
-  for (let i=0;i<arr.length;i++) {
+  for (let i=0; i<arr.length; i++) {
     const found = arr[i]===target
     s.push({ arr, hl:[i], lo:null, hi:null, mid:null, label:`[${i}]=${arr[i]} ${found?`== ${target} ✓`:`≠ ${target}`}`, found })
     if (found) break
@@ -27,8 +27,8 @@ function genLinearSteps(arr, target) {
 
 function genBinarySteps(arr, target) {
   const sorted = [...arr].sort((a,b)=>a-b)
-  const s = [{ arr:sorted, hl:[], lo:0, hi:sorted.length-1, mid:null, label:`Binary: find ${target} (sorted)`, found:false }]
   let lo=0, hi=sorted.length-1
+  const s = [{ arr:sorted, hl:[], lo:0, hi:sorted.length-1, mid:null, label:`Binary: find ${target} (sorted)`, found:false }]
   while (lo<=hi) {
     const mid=Math.floor((lo+hi)/2), found=sorted[mid]===target
     s.push({ arr:sorted, hl:[mid], lo, hi, mid, label: found?`Found ${target} at [${mid}]!`:sorted[mid]<target?`[${mid}]=${sorted[mid]} < ${target} → right`:`[${mid}]=${sorted[mid]} > ${target} → left`, found })
@@ -41,14 +41,13 @@ function genBinarySteps(arr, target) {
 
 function genJumpSteps(arr, target) {
   const sorted = [...arr].sort((a,b)=>a-b)
-  const n=sorted.length, jump=Math.floor(Math.sqrt(n))
-  const s = [{ arr:sorted, hl:[], lo:null, hi:null, mid:null, label:`Jump: step=${jump} (√${n})`, found:false }]
-  let prev=0, step=jump
+  const n=sorted.length, step=Math.floor(Math.sqrt(n))
+  let prev=0, s=[{ arr:sorted, hl:[], lo:null, hi:null, mid:null, label:`Jump: step size √${n}≈${step}` }]
   while (step<n && sorted[step]<target) {
     s.push({ arr:sorted, hl:[step], lo:prev, hi:step, mid:null, label:`[${step}]=${sorted[step]} < ${target}, jump` })
-    prev=step; step+=jump
+    prev=step; step+=Math.floor(Math.sqrt(n))
   }
-  for (let i=prev;i<Math.min(step,n);i++) {
+  for (let i=prev; i<=Math.min(step,n)-1; i++) {
     const found=sorted[i]===target
     s.push({ arr:sorted, hl:[i], lo:prev, hi:Math.min(step,n)-1, mid:null, label:found?`Found ${target} at [${i}]!`:`[${i}]=${sorted[i]} ≠ ${target}`, found })
     if (found) break
@@ -67,7 +66,7 @@ function genExponentialSteps(arr, target) {
     s.push({ arr:sorted, hl:[i], lo:null, hi:null, mid:null, label:`[${i}]=${sorted[i]} ≤ ${target}, double i` })
     i*=2
   }
-  const lo=Math.floor(i/2), hi=Math.min(i,n-1)
+  let lo=Math.floor(i/2), hi=Math.min(i,n-1)
   s.push({ arr:sorted, hl:[], lo, hi, mid:null, label:`Binary search in [${lo}..${hi}]` })
   let lo2=lo, hi2=hi
   while (lo2<=hi2) {
@@ -81,23 +80,24 @@ function genExponentialSteps(arr, target) {
 }
 
 const ALGOS = [
-  { key:'linear', label:'Linear', gen: genLinearSteps },
-  { key:'binary', label:'Binary', gen: genBinarySteps },
-  { key:'jump', label:'Jump', gen: genJumpSteps },
+  { key:'linear',      label:'Linear',      gen: genLinearSteps },
+  { key:'binary',      label:'Binary',      gen: genBinarySteps },
+  { key:'jump',        label:'Jump',        gen: genJumpSteps },
   { key:'exponential', label:'Exponential', gen: genExponentialSteps },
 ]
 
 export default function SearchingPage() {
   const [baseArr] = useState(() => randomArray(16, 5, 95))
   const [algo, setAlgo] = useState('linear')
-  const target = baseArr[Math.floor(baseArr.length/3)]
+  const [target, setTarget] = useState(() => baseArr[Math.floor(baseArr.length/3)])
+  const [targetInput, setTargetInput] = useState(() => String(baseArr[Math.floor(baseArr.length/3)]))
 
-  const makeSteps = (key) => {
+  const makeSteps = (key, tgt) => {
     const a = ALGOS.find(x=>x.key===key)
-    return a.gen(baseArr, target)
+    return a.gen(baseArr, tgt)
   }
 
-  const [steps, setSteps] = useState(() => makeSteps('linear'))
+  const [steps, setSteps] = useState(() => makeSteps('linear', baseArr[Math.floor(baseArr.length/3)]))
   const [disp, setDisp] = useState(() => steps[0])
   const stepsRef = useRef(steps)
   useEffect(() => { stepsRef.current = steps }, [steps])
@@ -111,10 +111,20 @@ export default function SearchingPage() {
   const { isPlaying, speed, setSpeed, play, stop, reset, stepForward, stepBack, progress } =
     usePlayback({ steps, onStep: handleStep })
 
+  const applyTarget = (val) => {
+    const n = parseInt(val)
+    if (isNaN(n)) return
+    stop()
+    setTarget(n)
+    const s = makeSteps(algo, n)
+    setSteps(s)
+    setDisp(s[0])
+  }
+
   const changeAlgo = (key) => {
     stop()
     setAlgo(key)
-    const s = makeSteps(key)
+    const s = makeSteps(key, target)
     setSteps(s)
     setDisp(s[0])
   }
@@ -148,18 +158,31 @@ export default function SearchingPage() {
           ))}
         </div>
 
-        <div className="text-xs mb-3" style={{color:'#555570'}}>
-          Searching for: <span style={{color:'#a78bfa',fontWeight:600}}>{target}</span>
+        <div className="flex items-center gap-3 mb-4">
+          <span className="text-xs" style={{color:'#555570'}}>Search for:</span>
+          <input
+            value={targetInput}
+            onChange={e => setTargetInput(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && applyTarget(targetInput)}
+            onBlur={() => applyTarget(targetInput)}
+            placeholder="value"
+            className="px-3 py-1.5 rounded-lg text-sm w-20 outline-none font-mono"
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(139,92,246,0.25)', color: '#a78bfa' }}
+          />
+          <span className="text-xs" style={{color:'#333350'}}>Enter to apply</span>
         </div>
 
         <div className="rounded-xl p-6 space-y-4" style={{ background:'#0d0d16', border:'1px solid rgba(255,255,255,0.06)' }}>
-          <AnimatePresence mode="wait">
-            <motion.p key={label} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
-              className="text-center text-sm font-medium h-5"
-              style={{ color: found?'#10b981':notFound?'#ef4444':hl.length?'#fbbf24':'#a78bfa' }}>
-              {label}
-            </motion.p>
-          </AnimatePresence>
+          <div className="h-6 flex items-center justify-center">
+            <AnimatePresence mode="wait">
+              {label && <motion.p key={label} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+                transition={{duration:0.15}}
+                className="text-sm font-medium"
+                style={{ color: found?'#10b981':notFound?'#ef4444':hl.length?'#fbbf24':'#a78bfa' }}>
+                {label}
+              </motion.p>}
+            </AnimatePresence>
+          </div>
 
           <div className="flex flex-wrap justify-center gap-1.5">
             {arr.map((val,i) => {
@@ -196,7 +219,7 @@ export default function SearchingPage() {
       <Section title="How They Work">
         <div className="space-y-4 text-sm" style={{color:'#8888aa'}}>
           {[
-            { name:'Linear Search', desc:'Scan each element L→R. Works on unsorted arrays. O(n) worst case.' },
+            { name:'Linear Search', desc:'Scan each element left to right. Works on unsorted arrays. O(n) worst case.' },
             { name:'Binary Search', desc:'Requires sorted array. Halve search space each step — O(log n). Classic divide and conquer.' },
             { name:'Jump Search', desc:'Jump √n steps forward until overshoot, then linear scan back. Sorted required. O(√n).' },
             { name:'Exponential Search', desc:'Double index (1,2,4,8…) to find upper bound, then binary search in range. Good for unbounded arrays. O(log n).' },
@@ -211,7 +234,6 @@ export default function SearchingPage() {
     </PageLayout>
   )
 }
-
 
 function Section({ title, children }) {
   return (

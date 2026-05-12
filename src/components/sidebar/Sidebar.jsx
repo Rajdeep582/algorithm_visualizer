@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown, Cpu, GitBranch, Menu, X, Zap } from 'lucide-react'
+import { ChevronDown, Cpu, GitBranch, Zap } from 'lucide-react'
 import { NAVIGATION } from '../../data/navigation'
 import { cn } from '../../lib/utils'
 
@@ -11,11 +11,29 @@ const categoryIcons = {
 
 export default function Sidebar({ open, onToggle, activeId, onSelect }) {
   const [expanded, setExpanded] = useState({ 'data-structures': true, 'algorithms': true })
+  const ref = useRef(null)
+
+  // Click outside → collapse
+  useEffect(() => {
+    if (!open) return
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) {
+        onToggle()
+      }
+    }
+    // small delay so the toggle-open click doesn't immediately close
+    const timer = setTimeout(() => document.addEventListener('mousedown', handler), 50)
+    return () => {
+      clearTimeout(timer)
+      document.removeEventListener('mousedown', handler)
+    }
+  }, [open, onToggle])
 
   const toggle = (id) => setExpanded(p => ({ ...p, [id]: !p[id] }))
 
   return (
     <motion.aside
+      ref={ref}
       initial={false}
       animate={{ width: open ? 240 : 0, opacity: open ? 1 : 0 }}
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
@@ -26,19 +44,12 @@ export default function Sidebar({ open, onToggle, activeId, onSelect }) {
       }}
     >
       <div className="w-60 h-full flex flex-col">
-        {/* Logo */}
+        {/* Logo — no X button */}
         <div className="flex items-center gap-3 px-4 py-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
           <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)' }}>
             <Cpu size={14} color="white" />
           </div>
           <span className="font-semibold text-sm tracking-tight" style={{ color: '#f0f0f8' }}>AlgoViz</span>
-          <button
-            onClick={onToggle}
-            className="ml-auto p-1 rounded opacity-40 hover:opacity-100 transition-opacity"
-            style={{ color: '#8888aa' }}
-          >
-            <X size={14} />
-          </button>
         </div>
 
         {/* Nav */}

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowRight } from 'lucide-react'
 
+const MAX_NODES = 15
 const randomVal = () => Math.floor(Math.random() * 90) + 5
 
 function makeList(vals) {
@@ -22,24 +23,24 @@ export default function LinkedListVisualizer() {
   }
 
   const insertHead = () => {
+    if (nodes.length >= MAX_NODES) return
     const val = input ? parseInt(input) : randomVal()
     setInput('')
     setNextId(p => {
       const id = p
-      const node = { id, val }
-      setNodes(prev => [node, ...prev])
+      setNodes(prev => [{ id, val }, ...prev])
       setTimeout(() => flash([id], `Inserted ${val} at head`), 100)
       return p + 1
     })
   }
 
   const insertTail = () => {
+    if (nodes.length >= MAX_NODES) return
     const val = input ? parseInt(input) : randomVal()
     setInput('')
     setNextId(p => {
       const id = p
-      const node = { id, val }
-      setNodes(prev => [...prev, node])
+      setNodes(prev => [...prev, { id, val }])
       setTimeout(() => flash([id], `Inserted ${val} at tail`), 100)
       return p + 1
     })
@@ -85,6 +86,8 @@ export default function LinkedListVisualizer() {
     setTimeout(() => setLabel(''), 900)
   }
 
+  const atLimit = nodes.length >= MAX_NODES
+
   return (
     <div className="space-y-4">
       {/* Controls */}
@@ -97,135 +100,139 @@ export default function LinkedListVisualizer() {
           style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: '#f0f0f8' }}
         />
         {[
-          { label: 'Insert Head', fn: insertHead },
-          { label: 'Insert Tail', fn: insertTail },
-          { label: 'Delete Head', fn: deleteHead },
-          { label: 'Delete Tail', fn: deleteTail },
-          { label: 'Reverse', fn: reverse },
-          { label: 'Traverse', fn: traverse },
+          { label: 'Insert Head', fn: insertHead, disabled: atLimit },
+          { label: 'Insert Tail', fn: insertTail, disabled: atLimit },
+          { label: 'Delete Head', fn: deleteHead, disabled: nodes.length === 0 },
+          { label: 'Delete Tail', fn: deleteTail, disabled: nodes.length === 0 },
+          { label: 'Reverse',     fn: reverse,     disabled: nodes.length < 2 },
+          { label: 'Traverse',    fn: traverse,    disabled: nodes.length === 0 },
         ].map(btn => (
           <motion.button
             key={btn.label}
-            onClick={btn.fn}
-            whileHover={{ scale: 1.05, boxShadow: '0 0 14px rgba(139,92,246,0.3)' }}
-            whileTap={{ scale: 0.93 }}
+            onClick={btn.disabled ? undefined : btn.fn}
+            whileHover={btn.disabled ? {} : { scale: 1.05, boxShadow: '0 0 14px rgba(139,92,246,0.3)' }}
+            whileTap={btn.disabled ? {} : { scale: 0.93 }}
             className="px-3 py-1.5 rounded-lg text-sm"
             style={{
-              background: 'rgba(139,92,246,0.12)',
-              color: '#a78bfa',
-              border: '1px solid rgba(139,92,246,0.25)',
+              background: btn.disabled ? 'rgba(255,255,255,0.03)' : 'rgba(139,92,246,0.12)',
+              color: btn.disabled ? '#333350' : '#a78bfa',
+              border: `1px solid ${btn.disabled ? 'rgba(255,255,255,0.04)' : 'rgba(139,92,246,0.25)'}`,
+              cursor: btn.disabled ? 'not-allowed' : 'pointer',
             }}
           >
             {btn.label}
           </motion.button>
         ))}
+        {atLimit && (
+          <span className="text-xs" style={{ color: '#555570' }}>Max {MAX_NODES} nodes</span>
+        )}
       </div>
 
       {/* Visualization */}
       <div
         className="rounded-xl p-6 overflow-x-auto"
-        style={{ background: '#0d0d16', border: '1px solid rgba(255,255,255,0.06)', minHeight: '140px' }}
+        style={{ background: '#0d0d16', border: '1px solid rgba(255,255,255,0.06)', minHeight: '160px' }}
       >
-        {label && (
-          <motion.div
-            key={label}
-            initial={{ opacity: 0, y: -6 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-4 text-sm font-medium"
-            style={{ color: '#a78bfa' }}
-          >
-            {label}
-          </motion.div>
-        )}
+        {/* Fixed-height label row */}
+        <div className="h-6 flex items-center justify-center mb-4">
+          <AnimatePresence mode="wait">
+            {label && (
+              <motion.span key={label}
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="text-sm font-medium" style={{ color: '#a78bfa' }}>
+                {label}
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </div>
 
-        <div className="flex items-center gap-2 justify-center flex-wrap">
-          {/* HEAD label */}
-          {nodes.length > 0 && (
-            <div className="flex flex-col items-center gap-1 mr-2">
-              <span className="text-xs px-2 py-0.5 rounded" style={{ background: 'rgba(16,185,129,0.1)', color: '#10b981', border: '1px solid rgba(16,185,129,0.2)' }}>HEAD</span>
-              <div className="w-0.5 h-3" style={{ background: '#10b981' }} />
-            </div>
-          )}
-
+        {/* Nodes row — pointer badge sits INSIDE each node's column */}
+        <div className="flex items-end justify-center gap-0">
           <AnimatePresence mode="popLayout">
             {nodes.map((node, i) => {
               const isHighlighted = highlight.includes(node.id)
+              const isFirst = i === 0
+              const isLast = i === nodes.length - 1
+              const showPointer = isFirst || isLast
+
               return (
                 <motion.div
                   key={node.id}
                   layout
-                  initial={{ opacity: 0, scale: 0.6, x: -20 }}
-                  animate={{ opacity: 1, scale: 1, x: 0 }}
+                  initial={{ opacity: 0, scale: 0.6, y: -10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.5, y: -20 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                  className="flex items-center gap-2"
+                  className="flex items-end"
                 >
-                  {/* Node box */}
-                  <motion.div
-                    className="flex rounded-lg overflow-hidden"
-                    animate={{
-                      boxShadow: isHighlighted ? '0 0 20px rgba(139,92,246,0.5)' : '0 0 0px transparent',
-                    }}
-                    style={{
-                      border: `1px solid ${isHighlighted ? 'rgba(139,92,246,0.7)' : 'rgba(255,255,255,0.1)'}`,
-                    }}
-                  >
-                    {/* Data cell */}
-                    <div
-                      className="px-4 py-3 flex items-center justify-center font-mono text-sm font-semibold"
-                      style={{
-                        background: isHighlighted ? 'rgba(139,92,246,0.25)' : 'rgba(255,255,255,0.04)',
-                        color: isHighlighted ? '#f0f0f8' : '#8888aa',
-                        minWidth: '48px',
-                      }}
-                    >
-                      {node.val}
+                  {/* Node column: pointer badge + node box */}
+                  <div className="flex flex-col items-center">
+                    {/* Pointer badge — fixed height slot so all nodes align at bottom */}
+                    <div className="flex flex-col items-center" style={{ height: '38px', justifyContent: 'flex-end' }}>
+                      {showPointer && (
+                        <>
+                          <span className="text-xs px-2 py-0.5 rounded font-semibold"
+                            style={{
+                              background: isFirst ? 'rgba(16,185,129,0.12)' : 'rgba(59,130,246,0.12)',
+                              color: isFirst ? '#10b981' : '#60a5fa',
+                              border: `1px solid ${isFirst ? 'rgba(16,185,129,0.25)' : 'rgba(59,130,246,0.25)'}`,
+                              lineHeight: '1.4',
+                            }}>
+                            {isFirst ? 'HEAD' : 'TAIL'}
+                          </span>
+                          <div className="w-px" style={{ height: '6px', background: isFirst ? '#10b981' : '#60a5fa' }} />
+                          <div style={{ width: 0, height: 0, borderLeft: '4px solid transparent', borderRight: '4px solid transparent', borderTop: `5px solid ${isFirst ? '#10b981' : '#60a5fa'}` }} />
+                        </>
+                      )}
                     </div>
-                    {/* Next pointer cell */}
-                    <div
-                      className="px-2 py-3 flex items-center justify-center text-xs"
-                      style={{
-                        background: 'rgba(255,255,255,0.02)',
-                        color: '#333350',
-                        borderLeft: '1px solid rgba(255,255,255,0.06)',
-                      }}
+
+                    {/* Node box */}
+                    <motion.div
+                      className="flex rounded-lg overflow-hidden"
+                      animate={{ boxShadow: isHighlighted ? '0 0 20px rgba(139,92,246,0.5)' : '0 0 0px transparent' }}
+                      style={{ border: `1px solid ${isHighlighted ? 'rgba(139,92,246,0.7)' : 'rgba(255,255,255,0.1)'}` }}
                     >
-                      {i < nodes.length - 1 ? '→' : 'null'}
-                    </div>
-                  </motion.div>
+                      <div className="px-4 py-3 flex items-center justify-center font-mono text-sm font-semibold"
+                        style={{ background: isHighlighted ? 'rgba(139,92,246,0.25)' : 'rgba(255,255,255,0.04)', color: isHighlighted ? '#f0f0f8' : '#8888aa', minWidth: '44px' }}>
+                        {node.val}
+                      </div>
+                      <div className="px-2 py-3 flex items-center justify-center text-xs"
+                        style={{ background: 'rgba(255,255,255,0.02)', color: '#333350', borderLeft: '1px solid rgba(255,255,255,0.06)' }}>
+                        {i < nodes.length - 1 ? '→' : 'null'}
+                      </div>
+                    </motion.div>
+                  </div>
 
                   {/* Arrow between nodes */}
                   {i < nodes.length - 1 && (
-                    <ArrowRight size={14} style={{ color: '#333350', flexShrink: 0 }} />
+                    <div className="flex items-center pb-0" style={{ paddingBottom: '11px' }}>
+                      <ArrowRight size={14} style={{ color: '#333350', flexShrink: 0, margin: '0 4px' }} />
+                    </div>
                   )}
                 </motion.div>
               )
             })}
           </AnimatePresence>
 
-          {nodes.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-sm"
-              style={{ color: '#333350' }}
-            >
-              Empty list — insert a node
-            </motion.div>
-          )}
-
           {/* NULL terminator */}
           {nodes.length > 0 && (
-            <div className="flex flex-col items-center gap-1 ml-1">
-              <div className="w-0.5 h-3" style={{ background: '#333350' }} />
+            <div className="flex items-center" style={{ paddingBottom: '11px' }}>
+              <ArrowRight size={12} style={{ color: '#333350', margin: '0 4px' }} />
               <span className="text-xs px-2 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.03)', color: '#333350', border: '1px solid rgba(255,255,255,0.06)' }}>NULL</span>
             </div>
           )}
+
+          {nodes.length === 0 && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              className="text-sm" style={{ color: '#333350' }}>
+              Empty list — insert a node
+            </motion.div>
+          )}
         </div>
 
-        {/* Size counter */}
-        <div className="mt-4 text-center text-xs" style={{ color: '#333350' }}>
-          Size: {nodes.length}
+        <div className="mt-3 text-center text-xs" style={{ color: '#333350' }}>
+          Size: {nodes.length} / {MAX_NODES}
         </div>
       </div>
     </div>

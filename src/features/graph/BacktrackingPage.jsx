@@ -78,11 +78,14 @@ export default function BacktrackingPage() {
         </p>
 
         <div className="rounded-xl p-5" style={{ background:'#0d0d16', border:'1px solid rgba(255,255,255,0.06)' }}>
-          <AnimatePresence mode="wait">
-            <motion.p key={label} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
-              className="text-center text-sm font-semibold mb-4"
-              style={{color: labelColor[state]||'#a78bfa'}}>{label}</motion.p>
-          </AnimatePresence>
+          <div className="h-6 flex items-center justify-center mb-3">
+            <AnimatePresence mode="wait">
+              {label && <motion.p key={label} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+                transition={{duration:0.15}}
+                className="text-sm font-semibold"
+                style={{color: labelColor[state]||'#a78bfa'}}>{label}</motion.p>}
+            </AnimatePresence>
+          </div>
 
           {/* Board */}
           <div className="flex justify-center mb-4">

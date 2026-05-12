@@ -137,10 +137,13 @@ function FibViz({ disp, n }) {
   const { dp=[], active=-1, label='' } = disp||{}
   return (
     <div className="rounded-xl p-5 space-y-4" style={{ background:'#0d0d16', border:'1px solid rgba(255,255,255,0.06)' }}>
-      <AnimatePresence mode="wait">
-        <motion.p key={label} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
-          className="text-center text-sm font-medium" style={{color:'#a78bfa'}}>{label}</motion.p>
-      </AnimatePresence>
+      <div className="h-6 flex items-center justify-center">
+        <AnimatePresence mode="wait">
+          {label && <motion.p key={label} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+            transition={{duration:0.15}}
+            className="text-sm font-medium" style={{color:'#a78bfa'}}>{label}</motion.p>}
+        </AnimatePresence>
+      </div>
       <div className="flex flex-wrap gap-1.5 justify-center">
         {dp.slice(0,n+1).map((v,i) => (
           <motion.div key={i}

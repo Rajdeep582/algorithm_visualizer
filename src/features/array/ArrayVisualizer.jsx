@@ -133,16 +133,19 @@ export default function ArrayVisualizer() {
 
       {/* Canvas */}
       <div className="rounded-xl p-6" style={{ background:'#0d0d16', border:'1px solid rgba(255,255,255,0.06)', minHeight:'200px' }}>
-        <AnimatePresence mode="wait">
-          {label && (
-            <motion.div key={label}
-              initial={{opacity:0,y:-6}} animate={{opacity:1,y:0}} exit={{opacity:0}}
-              className="text-center mb-4 text-sm font-medium"
-              style={{ color: action==='done'||action==='found'?'#10b981':action==='delete'?'#ef4444':action==='shift'?'#fbbf24':'#a78bfa' }}>
-              {label}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <div className="h-6 flex items-center justify-center mb-3">
+          <AnimatePresence mode="wait">
+            {label && (
+              <motion.div key={label}
+                initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+                transition={{duration:0.15}}
+                className="text-sm font-medium"
+                style={{ color: action==='done'||action==='found'?'#10b981':action==='delete'?'#ef4444':action==='shift'?'#fbbf24':'#a78bfa' }}>
+                {label}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* Bars */}
         <div className="flex items-end justify-center gap-1" style={{height:'110px'}}>

@@ -130,20 +130,22 @@ function StackVisualizer() {
             <div className="text-xs mb-1" style={{ color: '#555570' }}>Top</div>
             <div className="font-mono font-semibold" style={{ color: '#a78bfa' }}>{stack.length ? stack[stack.length - 1] : 'empty'}</div>
           </div>
-          <AnimatePresence mode="wait">
-            {label && (
-              <motion.div
-                key={label}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="rounded-lg px-4 py-2.5 text-sm"
-                style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)', color: '#a78bfa' }}
-              >
-                {label}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <div className="rounded-lg px-4 py-2.5 text-sm" style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.12)', minHeight: '42px', display: 'flex', alignItems: 'center' }}>
+            <AnimatePresence mode="wait">
+              {label && (
+                <motion.span
+                  key={label}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  style={{ color: '#a78bfa' }}
+                >
+                  {label}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </div>

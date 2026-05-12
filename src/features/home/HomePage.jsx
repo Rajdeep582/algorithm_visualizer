@@ -54,10 +54,16 @@ export default function HomePage({ onSelect }) {
           {FEATURED.map((f,i) => (
             <motion.button key={f.id} onClick={()=>onSelect(f.id)}
               initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{delay:0.3+i*0.04}}
-              whileHover={{y:-2,boxShadow:'0 8px 30px rgba(139,92,246,0.15)'}}
-              whileTap={{scale:0.98}}
-              className="text-left rounded-xl p-4 group transition-all"
-              style={{background:'#0d0d16',border:'1px solid rgba(255,255,255,0.06)'}}>
+              whileHover={{y:-2}} whileTap={{scale:0.98}}
+              className="text-left rounded-xl p-4 group"
+              style={{
+                background:'#0d0d16',
+                border:'1px solid rgba(255,255,255,0.06)',
+                transition:'box-shadow 0.08s ease, border-color 0.08s ease',
+              }}
+              onMouseEnter={e=>{e.currentTarget.style.boxShadow='0 8px 30px rgba(139,92,246,0.2)';e.currentTarget.style.borderColor='rgba(139,92,246,0.3)'}}
+              onMouseLeave={e=>{e.currentTarget.style.boxShadow='';e.currentTarget.style.borderColor='rgba(255,255,255,0.06)'}}
+            >
               <div className="flex items-start justify-between mb-2">
                 <span className="text-xl">{f.icon}</span>
                 <ChevronRight size={14} style={{color:'#333350',marginTop:2}} />

@@ -119,10 +119,13 @@ export default function GraphPage() {
         </div>
 
         <div className="rounded-xl" style={{ background:'#0d0d16', border:'1px solid rgba(255,255,255,0.06)' }}>
-          <AnimatePresence mode="wait">
-            <motion.p key={label} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
-              className="text-center py-3 text-sm font-medium" style={{color:'#a78bfa'}}>{label}</motion.p>
-          </AnimatePresence>
+          <div className="h-10 flex items-center justify-center">
+            <AnimatePresence mode="wait">
+              {label && <motion.p key={label} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
+                transition={{duration:0.15}}
+                className="text-sm font-medium" style={{color:'#a78bfa'}}>{label}</motion.p>}
+            </AnimatePresence>
+          </div>
 
           <svg width="420" height="360" style={{display:'block',margin:'0 auto'}}>
             {EDGES.map(([a,b],i) => (
