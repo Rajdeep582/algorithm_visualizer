@@ -29,10 +29,14 @@ export default function Sidebar({ open, onToggle, activeId, onSelect }) {
         onToggle()
       }
     }
-    const timer = setTimeout(() => document.addEventListener('mousedown', handler), 50)
+    const timer = setTimeout(() => {
+      document.addEventListener('mousedown', handler)
+      document.addEventListener('touchstart', handler)
+    }, 50)
     return () => {
       clearTimeout(timer)
       document.removeEventListener('mousedown', handler)
+      document.removeEventListener('touchstart', handler)
     }
   }, [open, onToggle])
 
@@ -142,7 +146,7 @@ export default function Sidebar({ open, onToggle, activeId, onSelect }) {
                           return (
                             <motion.button
                               key={item.id}
-                              onClick={() => !isComingSoon && onSelect?.(item.id)}
+                              onClick={() => { if (!isComingSoon) { onSelect?.(item.id); if (isMobile) onToggle() } }}
                               whileHover={!isComingSoon && !isActive ? { x: 3, transition: { duration: 0.12 } } : {}}
                               className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-left relative overflow-hidden"
                               style={{

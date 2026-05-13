@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { Brain, Layers, Eye, RotateCcw, Cpu, GitBranch, Network, Zap } from 'lucide-react'
+import AITreeVisual from './AITreeVisual'
 
 function Section({ id, title, icon: Icon, children }) {
   return (
@@ -651,6 +652,14 @@ export default function AIPage() {
           <InfoCard accent="#6366f1" delay={0.05} title="1990s–2010s" desc="Statistical ML, SVMs, Random Forests. IBM Deep Blue beats Kasparov. Internet = data." />
           <InfoCard accent="#8b5cf6" delay={0.1} title="2012–Now" desc="AlexNet ignites deep learning. GPT, DALL-E, AlphaFold. Generative AI era." />
         </div>
+      </Section>
+
+      {/* ── AI Knowledge Tree ── */}
+      <Section id="tree" title="AI / ML Knowledge Tree" icon={GitBranch}>
+        <p className="text-xs mb-4" style={{ color: '#555570' }}>
+          Full taxonomy — scroll right & down to explore. Every major branch, algorithm, and modern technique.
+        </p>
+        <AITreeVisual />
       </Section>
 
       {/* ── Types of AI ── */}

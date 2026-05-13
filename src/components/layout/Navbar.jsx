@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Copy, Check, Heart } from 'lucide-react'
+import { X, Copy, Check, Heart, Menu } from 'lucide-react'
 
 const UPI_ID = 'brajdeep029-1@oksbi'
 const QR_URL = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&bgcolor=0d0d16&color=a78bfa&data=${encodeURIComponent(`upi://pay?pa=${UPI_ID}&pn=Brajdeep&cu=INR`)}`
 
 const NAV_LINKS = ['Home', 'AI', 'About', 'Contact']
 
-export default function Navbar({ onNavigate }) {
+export default function Navbar({ onNavigate, sidebarOpen, onSidebarToggle }) {
   const [donateOpen, setDonateOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -30,20 +30,31 @@ export default function Navbar({ onNavigate }) {
           boxShadow: '0 1px 32px rgba(0,0,0,0.4)',
         }}
       >
-        {/* Logo */}
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="flex items-center gap-2 cursor-pointer select-none"
-          onClick={() => onNavigate?.('home')}
-        >
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg,#8b5cf6,#3b82f6)', boxShadow: '0 0 14px rgba(139,92,246,0.4)' }}>
-            <span className="text-white font-bold text-xs">AV</span>
-          </div>
-          <span className="font-semibold text-sm hidden sm:block" style={{ color: '#f0f0f8', letterSpacing: '0.02em' }}>
-            AlgoViz
-          </span>
-        </motion.div>
+        {/* Left group: sidebar toggle + logo */}
+        <div className="flex items-center gap-2">
+          {!sidebarOpen && (
+            <button
+              onClick={onSidebarToggle}
+              className="p-1.5 rounded-lg flex-shrink-0"
+              style={{ color: '#8888aa', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+            >
+              <Menu size={15} />
+            </button>
+          )}
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            className="flex items-center gap-2 cursor-pointer select-none"
+            onClick={() => onNavigate?.('home')}
+          >
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center"
+              style={{ background: 'linear-gradient(135deg,#8b5cf6,#3b82f6)', boxShadow: '0 0 14px rgba(139,92,246,0.4)' }}>
+              <span className="text-white font-bold text-xs">AV</span>
+            </div>
+            <span className="font-semibold text-sm hidden sm:block" style={{ color: '#f0f0f8', letterSpacing: '0.02em' }}>
+              AlgoViz
+            </span>
+          </motion.div>
+        </div>
 
         {/* Desktop nav links */}
         <div className="hidden md:flex items-center gap-1">

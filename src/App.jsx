@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Menu } from 'lucide-react'
 import Sidebar from './components/sidebar/Sidebar'
 import Navbar from './components/layout/Navbar'
 import HomePage from './features/home/HomePage'
@@ -45,6 +44,23 @@ const PAGES = {
 export default function App() {
   const [activeId, setActiveId] = useState('home')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [navHidden, setNavHidden] = useState(false)
+  const mainRef = useRef(null)
+  const lastScrollRef = useRef(0)
+
+  useEffect(() => {
+    const el = mainRef.current
+    if (!el) return
+    const onScroll = () => {
+      const cur = el.scrollTop
+      const last = lastScrollRef.current
+      if (cur > last + 8 && cur > 60) setNavHidden(true)
+      else if (cur < last - 5) setNavHidden(false)
+      lastScrollRef.current = cur
+    }
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [])
 
   const Page = PAGES[activeId] || HomePage
 
@@ -57,21 +73,21 @@ export default function App() {
         onSelect={setActiveId}
       />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Navbar onNavigate={(id) => {
-          if (PAGES[id]) setActiveId(id)
-          else if (id === 'home') setActiveId('home')
-        }} />
-        {!sidebarOpen && (
-          <div className="flex items-center gap-3 px-4 py-2"
-            style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-            <button onClick={() => setSidebarOpen(p => !p)}
-              className="p-1.5 rounded-lg"
-              style={{ color: '#8888aa', background: 'rgba(255,255,255,0.04)' }}>
-              <Menu size={16} />
-            </button>
-          </div>
-        )}
-        <main className="flex-1 overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch', scrollBehavior: 'smooth' }}>
+        <motion.div
+          animate={{ y: navHidden ? -64 : 0, opacity: navHidden ? 0 : 1 }}
+          transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+          style={{ flexShrink: 0 }}
+        >
+          <Navbar
+            onNavigate={(id) => {
+              if (PAGES[id]) setActiveId(id)
+              else if (id === 'home') setActiveId('home')
+            }}
+            sidebarOpen={sidebarOpen}
+            onSidebarToggle={() => setSidebarOpen(p => !p)}
+          />
+        </motion.div>
+        <main ref={mainRef} className="flex-1 overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch', scrollBehavior: 'smooth' }}>
           <AnimatePresence mode="wait">
             <motion.div
               key={activeId}
