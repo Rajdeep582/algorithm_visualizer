@@ -14,25 +14,25 @@ const FEATURED = [
 
 export default function HomePage({ onSelect }) {
   return (
-    <div className="max-w-3xl mx-auto px-8 py-16">
-      <motion.div initial={{opacity:0,y:-20}} animate={{opacity:1,y:0}} transition={{duration:0.5}} className="mb-12 text-center">
+    <div className="max-w-3xl mx-auto px-4 py-8 sm:px-8 sm:py-16">
+      <motion.div initial={{opacity:0,y:-20}} animate={{opacity:1,y:0}} transition={{duration:0.5}} className="mb-10 text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6 text-xs"
           style={{ background:'rgba(139,92,246,0.1)', border:'1px solid rgba(139,92,246,0.2)', color:'#8b5cf6' }}>
           <Cpu size={11} /><span>Algorithm Visualizer</span>
         </div>
-        <h1 className="text-4xl font-bold tracking-tight mb-4" style={{color:'#f0f0f8',lineHeight:1.15}}>
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4" style={{color:'#f0f0f8',lineHeight:1.15}}>
           Understand algorithms<br />
           <span style={{background:'linear-gradient(135deg,#8b5cf6,#3b82f6)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>
             through motion.
           </span>
         </h1>
-        <p className="text-base max-w-lg mx-auto" style={{color:'#8888aa'}}>
+        <p className="text-sm sm:text-base max-w-lg mx-auto" style={{color:'#8888aa'}}>
           Animated, interactive visualizations for every major algorithm and data structure. Step-by-step, educational, premium-quality.
         </p>
       </motion.div>
 
       <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.2}}
-        className="grid grid-cols-3 gap-3 mb-10">
+        className="grid grid-cols-3 gap-2 sm:gap-3 mb-8">
         {[
           {label:'Visualizers',value:'12+',icon:Zap},
           {label:'Data Structures',value:'7',icon:GitBranch},
@@ -50,7 +50,7 @@ export default function HomePage({ onSelect }) {
 
       <motion.div initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.3}}>
         <h2 className="text-sm font-medium mb-4 uppercase tracking-widest" style={{color:'#555570'}}>Get Started</h2>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {FEATURED.map((f,i) => (
             <motion.button key={f.id} onClick={()=>onSelect(f.id)}
               initial={{opacity:0,y:16}} animate={{opacity:1,y:0}} transition={{delay:0.3+i*0.04}}

@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 
 export default function PageLayout({ title, subtitle, tag, children }) {
   return (
-    <div className="max-w-3xl mx-auto px-8 py-10">
+    <div className="max-w-3xl mx-auto px-4 py-6 sm:px-8 sm:py-10">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -16 }}
@@ -18,7 +18,7 @@ export default function PageLayout({ title, subtitle, tag, children }) {
             {tag}
           </span>
         )}
-        <h1 className="text-3xl font-bold tracking-tight mb-2" style={{ color: '#f0f0f8' }}>{title}</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-2" style={{ color: '#f0f0f8' }}>{title}</h1>
         {subtitle && <p className="text-base" style={{ color: '#8888aa' }}>{subtitle}</p>}
         <div className="mt-4 h-px" style={{ background: 'linear-gradient(90deg, rgba(139,92,246,0.4), transparent)' }} />
       </motion.div>

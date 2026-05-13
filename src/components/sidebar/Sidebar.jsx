@@ -12,7 +12,14 @@ const categoryIcons = {
 
 export default function Sidebar({ open, onToggle, activeId, onSelect }) {
   const [expanded, setExpanded] = useState({ 'data-structures': true, 'algorithms': true })
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
   const ref = useRef(null)
+
+  useEffect(() => {
+    const fn = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', fn)
+    return () => window.removeEventListener('resize', fn)
+  }, [])
 
   // Click outside → collapse
   useEffect(() => {
@@ -22,7 +29,6 @@ export default function Sidebar({ open, onToggle, activeId, onSelect }) {
         onToggle()
       }
     }
-    // small delay so the toggle-open click doesn't immediately close
     const timer = setTimeout(() => document.addEventListener('mousedown', handler), 50)
     return () => {
       clearTimeout(timer)
@@ -33,15 +39,42 @@ export default function Sidebar({ open, onToggle, activeId, onSelect }) {
   const toggle = (id) => setExpanded(p => ({ ...p, [id]: !p[id] }))
 
   return (
+    <>
+      {/* Mobile backdrop */}
+      <AnimatePresence>
+        {open && isMobile && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-40"
+            style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)' }}
+            onClick={onToggle}
+          />
+        )}
+      </AnimatePresence>
+
     <motion.aside
       ref={ref}
       initial={false}
-      animate={{ width: open ? 240 : 0, opacity: open ? 1 : 0 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-      className="flex-shrink-0 overflow-hidden"
+      animate={
+        isMobile
+          ? { x: open ? 0 : -244 }
+          : { width: open ? 240 : 0, opacity: open ? 1 : 0 }
+      }
+      transition={{ type: 'spring', stiffness: 320, damping: 32 }}
+      className={isMobile ? '' : 'flex-shrink-0 overflow-hidden'}
       style={{
         background: '#0d0d16',
         borderRight: '1px solid rgba(255,255,255,0.05)',
+        ...(isMobile ? {
+          position: 'fixed',
+          left: 0, top: 0,
+          height: '100vh',
+          width: 244,
+          zIndex: 50,
+          overflowX: 'hidden',
+          overflowY: 'auto',
+        } : {}),
       }}
     >
       <div className="w-60 h-full flex flex-col">
@@ -173,5 +206,6 @@ export default function Sidebar({ open, onToggle, activeId, onSelect }) {
         </div>
       </div>
     </motion.aside>
+    </>
   )
 }

@@ -602,7 +602,7 @@ export default function AIPage() {
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
   return (
-    <div className="max-w-3xl mx-auto px-8 py-12">
+    <div className="max-w-3xl mx-auto px-4 py-8 sm:px-8 sm:py-12">
 
       {/* Hero */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
@@ -611,7 +611,7 @@ export default function AIPage() {
           style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)', color: '#8b5cf6' }}>
           <Brain size={11} /><span>Artificial Intelligence</span>
         </div>
-        <h1 className="text-4xl font-bold tracking-tight mb-4" style={{ color: '#f0f0f8', lineHeight: 1.15 }}>
+        <h1 className="text-2xl sm:text-4xl font-bold tracking-tight mb-4" style={{ color: '#f0f0f8', lineHeight: 1.15 }}>
           From Neurons to{' '}
           <span style={{ background: 'linear-gradient(135deg,#8b5cf6,#3b82f6,#10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Intelligence.
@@ -646,7 +646,7 @@ export default function AIPage() {
         <p className="text-xs mt-3 text-center mb-5" style={{ color: '#444460' }}>
           Deep Learning ⊂ Machine Learning ⊂ Artificial Intelligence
         </p>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <InfoCard accent="#555570" delay={0} title="1950s–80s" desc="Turing Test, Logic Theorist, Lisp. Rule-based expert systems. AI winters from unmet expectations." />
           <InfoCard accent="#6366f1" delay={0.05} title="1990s–2010s" desc="Statistical ML, SVMs, Random Forests. IBM Deep Blue beats Kasparov. Internet = data." />
           <InfoCard accent="#8b5cf6" delay={0.1} title="2012–Now" desc="AlexNet ignites deep learning. GPT, DALL-E, AlphaFold. Generative AI era." />
@@ -672,7 +672,7 @@ export default function AIPage() {
             points={['Far beyond human cognitive limits', 'Alignment problem: how to make it safe', 'Purely theoretical at this stage']}
           />
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <InfoCard accent="#10b981" title="Reactive Machines" desc="No memory. Reacts to current input only. Example: Deep Blue chess engine." />
           <InfoCard accent="#f59e0b" title="Limited Memory" desc="Uses recent past. Self-driving cars, most LLMs fall here." />
           <InfoCard accent="#6366f1" title="Theory of Mind" desc="Understands emotions and social dynamics. Active research frontier." />
@@ -686,7 +686,7 @@ export default function AIPage() {
           <Hi>Machine Learning</Hi> is a subset of AI where systems <Hi c="#60a5fa">learn from data</Hi> rather than
           following explicitly programmed rules. Core idea: find patterns in training data → build statistical model → predict on new data.
         </p>
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
           <InfoCard icon={Eye} accent="#3b82f6" delay={0}
             title="Supervised Learning"
             desc="Learn from labeled input-output pairs."
@@ -720,7 +720,7 @@ export default function AIPage() {
         </div>
 
         <SubHead>Overfitting vs Underfitting</SubHead>
-        <div className="grid grid-cols-3 gap-3 mb-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-2">
           <InfoCard accent="#ef4444" title="Underfitting" desc="Model too simple. High bias. Fails to capture patterns even in training data. Fix: more complexity, more features." />
           <InfoCard accent="#10b981" title="Good Fit" desc="Model generalizes. Low bias, low variance. Performs well on both training and unseen test data." />
           <InfoCard accent="#f59e0b" title="Overfitting" desc="Model memorizes training data. High variance. Fails on new data. Fix: regularization (L1/L2), dropout, more data." />
@@ -754,7 +754,7 @@ export default function AIPage() {
         <SubHead>Dimensionality Reduction</SubHead>
         <DimReduction />
 
-        <div className="grid grid-cols-2 gap-3 mt-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
           <InfoCard accent="#3b82f6" title="Curse of Dimensionality"
             desc="In high dimensions, data becomes sparse. Distance metrics break down. Every point is 'far' from every other. More dimensions ≠ always better."
             points={['Volume grows exponentially with dims', 'Need exponentially more data', 'Feature selection / PCA helps']}
@@ -774,7 +774,7 @@ export default function AIPage() {
           Learning = adjusting weights via <Hi c="#c4b5fd">backpropagation</Hi> to minimize a loss function.
         </p>
         <NNDiagram />
-        <div className="grid grid-cols-2 gap-3 mt-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
           <InfoCard accent="#3b82f6" title="Activation Functions"
             desc="Introduce non-linearity so networks learn complex patterns."
             points={['ReLU: max(0,x) — fast, sparse activations', 'Sigmoid: maps to (0,1) — binary output', 'Softmax: probability distribution — multi-class', 'GELU, Swish: used in modern transformers']}
@@ -809,7 +809,7 @@ export default function AIPage() {
           progressively abstract representations: pixels → edges → shapes → objects → concepts.
           Enabled by <Hi c="#10b981">GPU compute</Hi>, massive datasets, and improved optimizers.
         </p>
-        <div className="grid grid-cols-3 gap-3 mb-5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
           <InfoCard accent="#8b5cf6" title="Automatic Feature Learning"
             desc="No manual feature engineering. The network discovers representations directly from raw data." delay={0} />
           <InfoCard accent="#3b82f6" title="Hierarchical Representations"
@@ -904,7 +904,7 @@ export default function AIPage() {
         <p className="text-xs mt-3 mb-5 text-center" style={{ color: '#444460' }}>
           Dashed arrows = recurrent connections carrying h across time steps
         </p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <InfoCard accent="#8b5cf6" title="Vanishing Gradient Problem"
             desc="Gradients shrink exponentially over many time steps, preventing learning of long-range dependencies."
             points={['Gradient → 0 for early timesteps', 'Network forgets distant context', 'Solved by LSTM and GRU gates']}

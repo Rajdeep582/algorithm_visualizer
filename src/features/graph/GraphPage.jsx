@@ -187,7 +187,7 @@ export default function GraphPage() {
       </Section>
 
       <Section title="BFS vs DFS">
-        <div className="grid grid-cols-2 gap-3 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
           {[
             { name:'BFS', color:'#3b82f6', points:['Queue-based (FIFO)','Level-by-level','Shortest path (unweighted)','Higher memory: O(width)'] },
             { name:'DFS', color:'#8b5cf6', points:['Stack-based (LIFO)','Deep dive first','Cycle detection, topo sort','Lower memory: O(depth)'] },

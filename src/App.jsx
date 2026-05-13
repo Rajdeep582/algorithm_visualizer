@@ -64,14 +64,14 @@ export default function App() {
         {!sidebarOpen && (
           <div className="flex items-center gap-3 px-4 py-2"
             style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-            <button onClick={() => setSidebarOpen(true)}
+            <button onClick={() => setSidebarOpen(p => !p)}
               className="p-1.5 rounded-lg"
               style={{ color: '#8888aa', background: 'rgba(255,255,255,0.04)' }}>
               <Menu size={16} />
             </button>
           </div>
         )}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch', scrollBehavior: 'smooth' }}>
           <AnimatePresence mode="wait">
             <motion.div
               key={activeId}

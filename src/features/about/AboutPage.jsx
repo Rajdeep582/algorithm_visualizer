@@ -9,7 +9,7 @@ const FEATURES = [
 
 export default function AboutPage() {
   return (
-    <div className="max-w-2xl mx-auto px-8 py-16">
+    <div className="max-w-2xl mx-auto px-4 py-8 sm:px-8 sm:py-16">
       <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6 text-xs"
           style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)', color: '#8b5cf6' }}>
@@ -46,7 +46,7 @@ export default function AboutPage() {
         </motion.div>
 
         {/* Feature cards — 3 cards, single row */}
-        <div className="grid grid-cols-3 gap-3 mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-10">
           {FEATURES.map((f, i) => (
             <motion.div key={f.title}
               initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
