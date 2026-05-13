@@ -212,28 +212,53 @@ export default function AITreeVisual() {
     return { nodes, edges, svgW, svgH }
   }, [])
 
+  const [fitZoom, setFitZoom] = useState(1)
   const [zoom, setZoom]   = useState(1)
   const [isFs, setIsFs]   = useState(false)
-  const fsRef  = useRef(null)   // fullscreen container
-  const scrollRef = useRef(null) // scrollable inner
+  const fsRef  = useRef(null)
+  const scrollRef = useRef(null)
   const lastDistRef = useRef(null)
+
+  // ── Compute fit-to-card zoom on mount ─────────────────────────────────────
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const w = el.clientWidth   || 700
+    const h = el.clientHeight  || 480
+    const fz = Math.min(w / svgW, h / svgH, 1)   // never scale UP, only down
+    const clamped = Math.max(0.18, +fz.toFixed(3))
+    setFitZoom(clamped)
+    setZoom(clamped)
+  }, [svgW, svgH])
 
   // ── Fullscreen API ─────────────────────────────────────────────────────────
   const toggleFs = () => {
-    if (!document.fullscreenElement) fsRef.current?.requestFullscreen()
-    else document.exitFullscreen()
+    if (!document.fullscreenElement) {
+      fsRef.current?.requestFullscreen()
+      setZoom(1)   // reset to 100% when entering fullscreen
+    } else {
+      document.exitFullscreen()
+    }
   }
   useEffect(() => {
-    const fn = () => setIsFs(!!document.fullscreenElement)
+    const fn = () => {
+      const entering = !!document.fullscreenElement
+      setIsFs(entering)
+      if (!entering) setZoom(fitZoom)   // restore fit-zoom on exit
+    }
     document.addEventListener('fullscreenchange', fn)
     return () => document.removeEventListener('fullscreenchange', fn)
-  }, [])
+  }, [fitZoom])
 
-  // ── Wheel zoom (ctrl+scroll OR plain scroll when in fullscreen) ────────────
+  // ── Wheel zoom — throttled to ~1 step/sec ────────────────────────────────
+  const lastWheelRef = useRef(0)
   const onWheel = useCallback((e) => {
     if (!e.ctrlKey && !isFs) return
     e.preventDefault()
-    const delta = e.deltaY < 0 ? 0.12 : -0.12
+    const now = Date.now()
+    if (now - lastWheelRef.current < 700) return   // throttle
+    lastWheelRef.current = now
+    const delta = e.deltaY < 0 ? 0.2 : -0.2
     setZoom(z => Math.max(0.25, Math.min(4, +(z + delta).toFixed(2))))
   }, [isFs])
 
@@ -244,7 +269,45 @@ export default function AITreeVisual() {
     return () => el.removeEventListener('wheel', onWheel)
   }, [onWheel])
 
+  // ── Mouse drag pan ────────────────────────────────────────────────────────
+  const isDragging   = useRef(false)
+  const dragOrigin   = useRef({ x: 0, y: 0, sl: 0, st: 0 })
+
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+
+    const onDown = (e) => {
+      if (e.button !== 0) return
+      isDragging.current = true
+      dragOrigin.current = { x: e.clientX, y: e.clientY, sl: el.scrollLeft, st: el.scrollTop }
+      el.style.cursor = 'grabbing'
+      el.style.userSelect = 'none'
+    }
+    const onMove = (e) => {
+      if (!isDragging.current) return
+      el.scrollLeft = dragOrigin.current.sl - (e.clientX - dragOrigin.current.x)
+      el.scrollTop  = dragOrigin.current.st - (e.clientY - dragOrigin.current.y)
+    }
+    const onUp = () => {
+      isDragging.current = false
+      el.style.cursor = 'grab'
+      el.style.userSelect = ''
+    }
+
+    el.addEventListener('mousedown', onDown)
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('mouseup', onUp)
+    el.style.cursor = 'grab'
+    return () => {
+      el.removeEventListener('mousedown', onDown)
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('mouseup', onUp)
+    }
+  }, [])
+
   // ── Pinch zoom (touch) ─────────────────────────────────────────────────────
+  const lastPinchRef = useRef(0)
   const onTouchMove = (e) => {
     if (e.touches.length !== 2) return
     e.preventDefault()
@@ -252,8 +315,12 @@ export default function AITreeVisual() {
     const dy = e.touches[0].clientY - e.touches[1].clientY
     const dist = Math.sqrt(dx*dx + dy*dy)
     if (lastDistRef.current !== null) {
-      const delta = (dist - lastDistRef.current) * 0.005
-      setZoom(z => Math.max(0.25, Math.min(4, +(z + delta).toFixed(2))))
+      const now = Date.now()
+      if (now - lastPinchRef.current > 400) {
+        lastPinchRef.current = now
+        const delta = (dist - lastDistRef.current) * 0.004
+        setZoom(z => Math.max(0.25, Math.min(4, +(z + delta).toFixed(2))))
+      }
     }
     lastDistRef.current = dist
   }
@@ -292,7 +359,7 @@ export default function AITreeVisual() {
         <button style={btnStyle} onClick={() => setZoom(z => Math.max(0.25, +(z-0.2).toFixed(2)))}>
           <ZoomOut size={13} />
         </button>
-        <button style={{ ...btnStyle, marginLeft: 2 }} onClick={() => setZoom(1)}>
+        <button style={{ ...btnStyle, marginLeft: 2 }} onClick={() => setZoom(isFs ? 1 : fitZoom)}>
           <RotateCcw size={12} />
         </button>
         <button style={{ ...btnStyle, marginLeft: 2 }} onClick={toggleFs}>
@@ -314,7 +381,7 @@ export default function AITreeVisual() {
       >
         {/* Zoom wrapper — sized to scaled dimensions to maintain scroll range */}
         <div style={{ width: svgW * zoom, height: svgH * zoom, position: 'relative' }}>
-          <div style={{ transform: `scale(${zoom})`, transformOrigin: '0 0', position: 'absolute', top: 0, left: 0 }}>
+          <div style={{ transform: `scale(${zoom})`, transformOrigin: '0 0', position: 'absolute', top: 0, left: 0, transition: 'transform 0.8s cubic-bezier(0.4,0,0.2,1)' }}>
       <svg
         width={svgW}
         height={svgH}
